@@ -1,8 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
   const location = useLocation();
+  const [isInventoryOpen, setIsInventoryOpen] = useState(false); // State để quản lý dropdown
+
+  // Hàm toggle dropdown
+  const toggleInventoryDropdown = () => {
+    setIsInventoryOpen((prev) => !prev);
+  };
 
   return (
     <div
@@ -74,11 +80,15 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
                   d="M9 17v-2c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2v2m-6 0h6m-9-5h12M5 7h14a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2z"
                 />
               </svg>
-              {isSidebarOpen && <span>Danh mục tài sản</span>}
+              {isSidebarOpen && <span>Danh sách tài sản</span>}
             </Link>
           </li>
-          {/* <li className="p-4 hover:bg-gray-700">
-            <Link to="#" className="flex items-center">
+          {/* Thay "Nhà cung cấp" thành "Quản lý kho" với dropdown */}
+          <li className={`p-4 hover:bg-gray-700 ${isInventoryOpen ? "bg-gray-700" : ""}`}>
+            <div
+              onClick={toggleInventoryDropdown}
+              className="flex items-center cursor-pointer"
+            >
               <svg
                 className="w-6 h-6 mr-2"
                 fill="none"
@@ -93,9 +103,103 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
                   d="M9 17v-2c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2v2m-6 0h6m-9-5h12M5 7h14a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2z"
                 />
               </svg>
-              {isSidebarOpen && <span>Chi tiết tài sản</span>}
-            </Link>
-          </li> */}
+              {isSidebarOpen && (
+                <span className="flex-1">Quản lý kho</span>
+              )}
+              {isSidebarOpen && (
+                <svg
+                  className={`w-4 h-4 transform transition-transform ${
+                    isInventoryOpen ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              )}
+            </div>
+            {/* Dropdown */}
+            {isInventoryOpen && isSidebarOpen && (
+              <ul className="pl-8">
+                <li
+                  className={`p-2 hover:bg-gray-600 ${
+                    location.pathname === "/supplier-list" ? "bg-gray-600" : ""
+                  }`}
+                >
+                  <Link to="/supplier-list" className="flex items-center">
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M9 17v-2c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2v2m-6 0h6m-9-5h12M5 7h14a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2z"
+                      />
+                    </svg>
+                    <span>Nhà cung cấp</span>
+                  </Link>
+                </li>
+                <li
+                  className={`p-2 hover:bg-gray-600 ${
+                    location.pathname === "/inventory-receipt" ? "bg-gray-600" : ""
+                  }`}
+                >
+                  <Link to="/inventory-receipt" className="flex items-center">
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                    <span>Phiếu nhập</span>
+                  </Link>
+                </li>
+                <li
+                  className={`p-2 hover:bg-gray-600 ${
+                    location.pathname === "/inventory-issue" ? "bg-gray-600" : ""
+                  }`}
+                >
+                  <Link to="/inventory-issue" className="flex items-center">
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                    <span>Phiếu xuất</span>
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
           <li className="p-4 hover:bg-gray-700">
             <Link to="#" className="flex items-center">
               <svg
@@ -153,7 +257,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
               {isSidebarOpen && <span>Đồng bộ</span>}
             </Link>
           </li> */}
-          <li className="p-4 hover:bg-gray-700">
+          {/* <li className="p-4 hover:bg-gray-700">
             <Link to="#" className="flex items-center">
               <svg
                 className="w-6 h-6 mr-2"
@@ -171,27 +275,8 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
               </svg>
               {isSidebarOpen && <span>Văn phòng</span>}
             </Link>
-          </li>
-          <li className="p-4 hover:bg-gray-700">
-            <Link to="#" className="flex items-center">
-              <svg
-                className="w-6 h-6 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 17v-2c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2v2m-6 0h6m-9-5h12M5 7h14a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2z"
-                />
-              </svg>
-              {isSidebarOpen && <span>Nhà cung cấp</span>}
-            </Link>
-          </li>
-          <li className="p-4 hover:bg-gray-700">
+          </li> */}
+          {/* <li className="p-4 hover:bg-gray-700">
             <Link to="#" className="flex items-center">
               <svg
                 className="w-6 h-6 mr-2"
@@ -209,8 +294,8 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
               </svg>
               {isSidebarOpen && <span>Thanh lý</span>}
             </Link>
-          </li>
-          <li className="p-4 hover:bg-gray-700">
+          </li> */}
+          {/* <li className="p-4 hover:bg-gray-700">
             <Link to="#" className="flex items-center">
               <svg
                 className="w-6 h-6 mr-2"
@@ -228,8 +313,8 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
               </svg>
               {isSidebarOpen && <span>Khu vực</span>}
             </Link>
-          </li>
-          <li className="p-4 hover:bg-gray-700">
+          </li> */}
+          {/* <li className="p-4 hover:bg-gray-700">
             <Link to="#" className="flex items-center">
               <svg
                 className="w-6 h-6 mr-2"
@@ -247,7 +332,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
               </svg>
               {isSidebarOpen && <span>Hệ thống</span>}
             </Link>
-          </li>
+          </li> */}
         </ul>
       </nav>
     </div>

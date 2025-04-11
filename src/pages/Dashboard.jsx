@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import WarehouseOverview from "./WarehouseOverview";
 import WarehouseTable from "./WarehouseTable";
-import Filter from "../components/Filter";
+import Filter from "../components/layout/Filter";
 import RequestManagement from "../components/requests/RequestManagement";
 import AlertsList from "../components/alerts/AlertList";
 

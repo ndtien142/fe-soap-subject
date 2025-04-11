@@ -21,9 +21,12 @@ const Login = ({ setIsAuthenticated }) => {
         password,
       });
 
-      const { token } = response.data.metadata;
+      const { token, role } = response.data.metadata;
 
+      // Lưu token và role vào localStorage
       localStorage.setItem("token", token);
+      localStorage.setItem("role", role); // Lưu vai trò
+
       setIsAuthenticated(true);
       navigate("/home");
     } catch (err) {

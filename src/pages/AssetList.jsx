@@ -1,86 +1,83 @@
 import React, { useState, useCallback } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import * as XLSX from "xlsx";
-import Filter from "../components/Filter";
-import Sidebar from "../components/Sidebar"; 
+import Sidebar from "../components/layout/Sidebar";
+import Header from "../components/layout/Header";
+import useRole from "../components/auth/useRole"; 
 
-// Dữ liệu giả lập ban đầu
+
+const Filter = ({ onFilterChange, categories }) => {
+  return (
+    <div className="mb-4">
+      <label className="mr-2">Lọc theo danh mục:</label>
+      <select
+        name="category"
+        onChange={(e) => onFilterChange({ name: "category", value: e.target.value })}
+        className="border rounded-lg px-3 py-1"
+      >
+        <option value="">Tất cả</option>
+        {categories && categories.length > 0 ? (
+          categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))
+        ) : (
+          <option value="" disabled>
+            Không có danh mục
+          </option>
+        )}
+      </select>
+    </div>
+  );
+};
+
+// Dữ liệu giả lập cho tài sản
 const initialAssetData = [
   {
-    id: "PC0002",
-    name: "Máy tính để bàn",
-    category: "CNTT",
-    status: "Tốt",
-    purchaseDate: "2016-09-19",
-    warrantyDate: "2016-09-19",
-    warrantyStatus: "Empty",
+    id: "TS001",
+    name: "Máy tính xách tay",
+    category: "Điện tử",
+    purchaseDate: "2023-01-15",
+    price: 15000000,
+    status: "Đang sử dụng",
   },
   {
-    id: "PC0001",
-    name: "Máy tính xách tay",
-    category: "CNTT",
-    status: "Hỏng",
-    purchaseDate: "2016-09-19",
-    warrantyDate: "2016-09-19",
-    warrantyStatus: "Empty",
+    id: "TS002",
+    name: "Bàn làm việc",
+    category: "Nội thất",
+    purchaseDate: "2022-06-20",
+    price: 2000000,
+    status: "Đang sử dụng",
   },
 ];
 
 const AssetList = ({ setIsAuthenticated }) => {
-  const navigate = useNavigate();
+  const role = useRole(); // Lấy vai trò người dùng
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [avatar, setAvatar] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [assetData, setAssetData] = useState(initialAssetData);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState(null);
   const [newAsset, setNewAsset] = useState({
     id: "",
     name: "",
     category: "",
-    status: "",
     purchaseDate: "",
-    warrantyDate: "",
-    warrantyStatus: "",
+    price: "",
+    status: "",
   });
+  const [filter, setFilter] = useState({ category: "" });
 
-  // State cho bộ lọc
-  const [filter, setFilter] = useState({
-    category: "",
-  });
+  const toggleSidebar = useCallback(() => {
+    setIsSidebarOpen((prev) => !prev);
+  }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsAuthenticated(false);
-    navigate("/");
-  };
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-
-  const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setAvatar(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-    setIsDropdownOpen(false);
-  };
-
-  // Tìm kiếm
-  const handleSearch = (e) => {
+  const handleSearch = useCallback((e) => {
     setSearchTerm(e.target.value);
-  };
+  }, []);
 
-  // Xử lý thay đổi bộ lọc từ Filter component
   const handleFilterChange = useCallback(({ name, value }) => {
     setFilter((prevFilter) => ({
       ...prevFilter,
@@ -88,7 +85,6 @@ const AssetList = ({ setIsAuthenticated }) => {
     }));
   }, []);
 
-  // Lọc dữ liệu
   const filteredData = assetData.filter((asset) => {
     const matchesSearch =
       asset.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -101,112 +97,90 @@ const AssetList = ({ setIsAuthenticated }) => {
     return matchesSearch && matchesCategory;
   });
 
-  // Thêm mới
-  const handleAddAsset = (e) => {
-    e.preventDefault();
-    setAssetData([...assetData, newAsset]);
-    setNewAsset({
-      id: "",
-      name: "",
-      category: "",
-      status: "",
-      purchaseDate: "",
-      warrantyDate: "",
-      warrantyStatus: "",
-    });
-    setShowAddForm(false);
-  };
+  const handleAddAsset = useCallback(
+    (e) => {
+      e.preventDefault();
+      setAssetData((prevData) => [...prevData, newAsset]);
+      setNewAsset({
+        id: "",
+        name: "",
+        category: "",
+        purchaseDate: "",
+        price: "",
+        status: "",
+      });
+      setShowAddForm(false);
+    },
+    [newAsset]
+  );
 
-  // Xóa
-  const handleDelete = (id) => {
+  const handleShowDetail = useCallback((asset) => {
+    setSelectedAsset(asset);
+    setShowDetailModal(true);
+  }, []);
+
+  const handleShowEdit = useCallback((asset) => {
+    setSelectedAsset({ ...asset });
+    setShowEditModal(true);
+  }, []);
+
+  const handleEditAsset = useCallback(
+    (e) => {
+      e.preventDefault();
+      setAssetData((prevData) =>
+        prevData.map((asset) =>
+          asset.id === selectedAsset.id ? selectedAsset : asset
+        )
+      );
+      setShowEditModal(false);
+      setSelectedAsset(null);
+    },
+    [selectedAsset]
+  );
+
+  const handleDeleteAsset = useCallback((id) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa tài sản này?")) {
-      setAssetData(assetData.filter((asset) => asset.id !== id));
+      setAssetData((prevData) => prevData.filter((asset) => asset.id !== id));
     }
-  };
+  }, []);
 
-  // Xuất Excel
-  const handleExportExcel = () => {
+  const handleExportExcel = useCallback(() => {
     const worksheet = XLSX.utils.json_to_sheet(filteredData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Danh sách tài sản");
     XLSX.writeFile(workbook, "DanhSachTaiSan.xlsx");
-  };
+  }, [filteredData]);
 
-  // Lấy danh sách các giá trị duy nhất cho bộ lọc
-  const categories = [...new Set(assetData.map((asset) => asset.category))];
+  const categories = assetData
+    ? [...new Set(assetData.map((asset) => asset.category))]
+    : [];
+
+  if (!assetData || !filteredData) {
+    return <div>Đang tải dữ liệu...</div>;
+  }
+
+  // Kiểm tra quyền
+  const canAdd = role === "admin" || role === "manager"; // Admin và Quản lý có quyền thêm
+  const canEdit = role === "admin" || role === "manager"; // Admin và Quản lý có quyền sửa
+  const canDelete = role === "admin"; // Chỉ Admin có quyền xóa
+  const canExport = role === "admin" || role === "manager"; // Admin và Quản lý có quyền xuất Excel
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* Sử dụng Sidebar component */}
+      {/* Sidebar */}
       <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <header className="bg-red-800 text-white p-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold">PTIT</h1>
-          <div className="relative">
-            <button onClick={toggleDropdown} className="focus:outline-none">
-              {avatar ? (
-                <img
-                  src={avatar}
-                  alt="Admin Avatar"
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-              ) : (
-                <svg
-                  className="w-10 h-10 rounded-full bg-gray-200 p-1 text-gray-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M5.121 17.804A7.978 7.978 0 0112 14a7.978 7.978 0 016.879 3.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 2a10 10 0 100 20 10 10 0 000-20z"
-                  />
-                </svg>
-              )}
-            </button>
-            {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-lg z-10">
-                <div className="py-2">
-                  <label className="block px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                    Đổi hình ảnh
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleAvatarChange}
-                      className="hidden"
-                    />
-                  </label>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                  >
-                    Đăng xuất
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </header>
+        <Header setIsAuthenticated={setIsAuthenticated} />
 
         {/* Content */}
         <main className="p-6 flex-1">
           <div className="bg-white p-4 rounded-lg shadow">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Danh mục tài sản</h2>
+              <h2 className="text-lg font-semibold">Danh sách tài sản</h2>
               <div className="flex items-center space-x-2">
-                {/* Thanh tìm kiếm */}
                 <div className="relative">
                   <input
                     type="text"
@@ -230,39 +204,30 @@ const AssetList = ({ setIsAuthenticated }) => {
                     />
                   </svg>
                 </div>
-                {/* Các nút */}
-                <button
-                  onClick={() => setShowAddForm(true)}
-                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                >
-                  Thêm mới
-                </button>
-                <button
-                  onClick={handleExportExcel}
-                  className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                >
-                  Xuất EXCEL
-                </button>
-                <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                  Nhập dữ liệu
-                </button>
-                <button className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">
-                  Tùy chọn
-                </button>
-                <button className="bg-orange-500 text-white px-3 py-1 rounded hover:bg-orange-600">
-                  Quản lý
-                </button>
-                <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-                  Báo cáo
-                </button>
+                {canAdd && (
+                  <button
+                    onClick={() => setShowAddForm(true)}
+                    className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                  >
+                    Thêm mới
+                  </button>
+                )}
+                {canExport && (
+                  <button
+                    onClick={handleExportExcel}
+                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                  >
+                    Xuất EXCEL
+                  </button>
+                )}
               </div>
             </div>
 
-            {/* Tích hợp Filter */}
+            {/* Bộ lọc */}
             <Filter onFilterChange={handleFilterChange} categories={categories} />
 
             {/* Form Thêm mới (Modal) */}
-            {showAddForm && (
+            {showAddForm && canAdd && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
                   <h3 className="text-lg font-semibold mb-4">Thêm tài sản mới</h3>
@@ -292,24 +257,12 @@ const AssetList = ({ setIsAuthenticated }) => {
                       />
                     </div>
                     <div className="mb-4">
-                      <label className="block text-gray-700">Phân loại</label>
+                      <label className="block text-gray-700">Danh mục</label>
                       <input
                         type="text"
                         value={newAsset.category}
                         onChange={(e) =>
                           setNewAsset({ ...newAsset, category: e.target.value })
-                        }
-                        className="w-full border rounded-lg px-3 py-1"
-                        required
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <label className="block text-gray-700">Trạng thái</label>
-                      <input
-                        type="text"
-                        value={newAsset.status}
-                        onChange={(e) =>
-                          setNewAsset({ ...newAsset, status: e.target.value })
                         }
                         className="w-full border rounded-lg px-3 py-1"
                         required
@@ -328,28 +281,32 @@ const AssetList = ({ setIsAuthenticated }) => {
                       />
                     </div>
                     <div className="mb-4">
-                      <label className="block text-gray-700">Ngày hết bảo hành</label>
+                      <label className="block text-gray-700">Giá trị</label>
                       <input
-                        type="date"
-                        value={newAsset.warrantyDate}
+                        type="number"
+                        value={newAsset.price}
                         onChange={(e) =>
-                          setNewAsset({ ...newAsset, warrantyDate: e.target.value })
+                          setNewAsset({ ...newAsset, price: e.target.value })
                         }
                         className="w-full border rounded-lg px-3 py-1"
                         required
                       />
                     </div>
                     <div className="mb-4">
-                      <label className="block text-gray-700">Ngày bảo hành tiếp theo</label>
-                      <input
-                        type="text"
-                        value={newAsset.warrantyStatus}
+                      <label className="block text-gray-700">Trạng thái</label>
+                      <select
+                        value={newAsset.status}
                         onChange={(e) =>
-                          setNewAsset({ ...newAsset, warrantyStatus: e.target.value })
+                          setNewAsset({ ...newAsset, status: e.target.value })
                         }
                         className="w-full border rounded-lg px-3 py-1"
                         required
-                      />
+                      >
+                        <option value="">Chọn trạng thái</option>
+                        <option value="Đang sử dụng">Đang sử dụng</option>
+                        <option value="Hỏng">Hỏng</option>
+                        <option value="Thanh lý">Thanh lý</option>
+                      </select>
                     </div>
                     <div className="flex justify-end space-x-2">
                       <button
@@ -371,6 +328,144 @@ const AssetList = ({ setIsAuthenticated }) => {
               </div>
             )}
 
+            {/* Modal Chi tiết tài sản */}
+            {showDetailModal && selectedAsset && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                  <h3 className="text-lg font-semibold mb-4">Chi tiết tài sản</h3>
+                  <div className="space-y-2">
+                    <p>
+                      <strong>Mã tài sản:</strong> {selectedAsset.id}
+                    </p>
+                    <p>
+                      <strong>Tên tài sản:</strong> {selectedAsset.name}
+                    </p>
+                    <p>
+                      <strong>Danh mục:</strong> {selectedAsset.category}
+                    </p>
+                    <p>
+                      <strong>Ngày mua:</strong> {selectedAsset.purchaseDate}
+                    </p>
+                    <p>
+                      <strong>Giá trị:</strong> {selectedAsset.price.toLocaleString()} VNĐ
+                    </p>
+                    <p>
+                      <strong>Trạng thái:</strong> {selectedAsset.status}
+                    </p>
+                  </div>
+                  <div className="flex justify-end mt-4">
+                    <button
+                      onClick={() => setShowDetailModal(false)}
+                      className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                    >
+                      Đóng
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Modal Chỉnh sửa tài sản */}
+            {showEditModal && selectedAsset && canEdit && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                  <h3 className="text-lg font-semibold mb-4">Chỉnh sửa tài sản</h3>
+                  <form onSubmit={handleEditAsset}>
+                    <div className="mb-4">
+                      <label className="block text-gray-700">Mã tài sản</label>
+                      <input
+                        type="text"
+                        value={selectedAsset.id}
+                        onChange={(e) =>
+                          setSelectedAsset({ ...selectedAsset, id: e.target.value })
+                        }
+                        className="w-full border rounded-lg px-3 py-1"
+                        disabled
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-gray-700">Tên tài sản</label>
+                      <input
+                        type="text"
+                        value={selectedAsset.name}
+                        onChange={(e) =>
+                          setSelectedAsset({ ...selectedAsset, name: e.target.value })
+                        }
+                        className="w-full border rounded-lg px-3 py-1"
+                        required
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-gray-700">Danh mục</label>
+                      <input
+                        type="text"
+                        value={selectedAsset.category}
+                        onChange={(e) =>
+                          setSelectedAsset({ ...selectedAsset, category: e.target.value })
+                        }
+                        className="w-full border rounded-lg px-3 py-1"
+                        required
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-gray-700">Ngày mua</label>
+                      <input
+                        type="date"
+                        value={selectedAsset.purchaseDate}
+                        onChange={(e) =>
+                          setSelectedAsset({ ...selectedAsset, purchaseDate: e.target.value })
+                        }
+                        className="w-full border rounded-lg px-3 py-1"
+                        required
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-gray-700">Giá trị</label>
+                      <input
+                        type="number"
+                        value={selectedAsset.price}
+                        onChange={(e) =>
+                          setSelectedAsset({ ...selectedAsset, price: e.target.value })
+                        }
+                        className="w-full border rounded-lg px-3 py-1"
+                        required
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-gray-700">Trạng thái</label>
+                      <select
+                        value={selectedAsset.status}
+                        onChange={(e) =>
+                          setSelectedAsset({ ...selectedAsset, status: e.target.value })
+                        }
+                        className="w-full border rounded-lg px-3 py-1"
+                        required
+                      >
+                        <option value="Đang sử dụng">Đang sử dụng</option>
+                        <option value="Hỏng">Hỏng</option>
+                        <option value="Thanh lý">Thanh lý</option>
+                      </select>
+                    </div>
+                    <div className="flex justify-end space-x-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowEditModal(false)}
+                        className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                      >
+                        Hủy
+                      </button>
+                      <button
+                        type="submit"
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                      >
+                        Lưu
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+
             {/* Table */}
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
@@ -378,11 +473,10 @@ const AssetList = ({ setIsAuthenticated }) => {
                   <tr className="bg-gray-200">
                     <th className="border p-2 text-left">Mã tài sản</th>
                     <th className="border p-2 text-left">Tên tài sản</th>
-                    <th className="border p-2 text-left">Phân loại</th>
-                    <th className="border p-2 text-left">Trạng thái</th>
+                    <th className="border p-2 text-left">Danh mục</th>
                     <th className="border p-2 text-left">Ngày mua</th>
-                    <th className="border p-2 text-left">Ngày hết bảo hành</th>
-                    <th className="border p-2 text-left">Ngày bảo hành tiếp theo</th>
+                    <th className="border p-2 text-left">Giá trị</th>
+                    <th className="border p-2 text-left">Trạng thái</th>
                     <th className="border p-2 text-left">Hành động</th>
                   </tr>
                 </thead>
@@ -392,12 +486,10 @@ const AssetList = ({ setIsAuthenticated }) => {
                       <td className="border p-2">{asset.id}</td>
                       <td className="border p-2">{asset.name}</td>
                       <td className="border p-2">{asset.category}</td>
-                      <td className="border p-2">{asset.status}</td>
                       <td className="border p-2">{asset.purchaseDate}</td>
-                      <td className="border p-2">{asset.warrantyDate}</td>
-                      <td className="border p-2 text-red-500">{asset.warrantyStatus}</td>
+                      <td className="border p-2">{asset.price.toLocaleString()} VNĐ</td>
+                      <td className="border p-2">{asset.status}</td>
                       <td className="border p-2 flex space-x-2">
-                        {/* Biểu tượng xem chi tiết (mắt) */}
                         <button
                           onClick={() => handleShowDetail(asset)}
                           className="text-blue-500 hover:text-blue-700"
@@ -423,45 +515,48 @@ const AssetList = ({ setIsAuthenticated }) => {
                             />
                           </svg>
                         </button>
-                        {/* Biểu tượng chỉnh sửa (bút) */}
-                        <button
-                          onClick={() => handleShowEdit(asset)}
-                          className="text-blue-500 hover:text-blue-700"
-                        >
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
+                        {canEdit && (
+                          <button
+                            onClick={() => handleShowEdit(asset)}
+                            className="text-blue-500 hover:text-blue-700"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                            />
-                          </svg>
-                        </button>
-                        <button
-                          onClick={() => handleDelete(asset.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                              />
+                            </svg>
+                          </button>
+                        )}
+                        {canDelete && (
+                          <button
+                            onClick={() => handleDeleteAsset(asset.id)}
+                            className="text-red-500 hover:text-red-700"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M6 18L18 6M6 6l12 12"
-                            />
-                          </svg>
-                        </button>
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4M4 7h16"
+                              />
+                            </svg>
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}

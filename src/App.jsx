@@ -1,23 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/auth/Login";
 import Home from "./pages/Home";
 import AssetList from "./pages/AssetList";
+import SupplierList from "./pages/SupplierList";
+import InventoryReceipt from "./pages/InventoryReceipt"; // Thêm import
+import InventoryIssue from "./pages/InventoryIssue"; // Thêm import
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Kiểm tra trạng thái đăng nhập từ localStorage khi ứng dụng khởi động
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsAuthenticated(true); // Nếu có token, coi như đã đăng nhập
+  const handleSetIsAuthenticated = useCallback((value) => {
+    setIsAuthenticated(value);
+    if (value) {
+      localStorage.setItem("token", "your-token-here");
     } else {
-      setIsAuthenticated(false); // Nếu không có token, chưa đăng nhập
+      localStorage.removeItem("token");
     }
   }, []);
 
-  // Component bảo vệ route
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, []);
+
   const ProtectedRoute = ({ children }) => {
     return isAuthenticated ? children : <Navigate to="/" />;
   };
@@ -25,33 +35,52 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        {/* Route cho trang đăng nhập */}
         <Route
           path="/"
-          element={<Login setIsAuthenticated={setIsAuthenticated} />}
+          element={<Login setIsAuthenticated={handleSetIsAuthenticated} />}
         />
-
-        {/* Route cho trang Home (bảo vệ) */}
         <Route
           path="/home"
           element={
             <ProtectedRoute>
-              <Home setIsAuthenticated={setIsAuthenticated} />
+              <Home setIsAuthenticated={handleSetIsAuthenticated} />
             </ProtectedRoute>
           }
         />
-
-        {/* Route cho trang AssetList (bảo vệ) */}
         <Route
           path="/asset-list"
           element={
             <ProtectedRoute>
-              <AssetList setIsAuthenticated={setIsAuthenticated} />
+              <AssetList setIsAuthenticated={handleSetIsAuthenticated} />
             </ProtectedRoute>
           }
         />
-
-        {/* Redirect các route không tồn tại về trang đăng nhập */}
+        <Route
+          path="/supplier-list"
+          element={
+            <ProtectedRoute>
+              <SupplierList setIsAuthenticated={handleSetIsAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
+        {/* Route cho Phiếu nhập */}
+        <Route
+          path="/inventory-receipt"
+          element={
+            <ProtectedRoute>
+              <InventoryReceipt setIsAuthenticated={handleSetIsAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
+        {/* Route cho Phiếu xuất */}
+        <Route
+          path="/inventory-issue"
+          element={
+            <ProtectedRoute>
+              <InventoryIssue setIsAuthenticated={handleSetIsAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
