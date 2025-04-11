@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/auth/Login";
 import Home from "./pages/Home";
+import BienBanPage from "./pages/BienBanPage";
 import AssetList from "./pages/AssetList";
 
 const App = () => {
@@ -47,6 +48,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <AssetList setIsAuthenticated={setIsAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/phieubangiao"
+          element={
+            <ProtectedRoute>
+              <BienBanPage/>
             </ProtectedRoute>
           }
         />

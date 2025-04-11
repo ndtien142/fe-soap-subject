@@ -20,7 +20,7 @@ const Login = ({ setIsAuthenticated }) => {
         username,
         password,
       });
-
+      console.log(response);
       const { token } = response.data.metadata;
 
       localStorage.setItem("token", token);

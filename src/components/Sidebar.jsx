@@ -116,7 +116,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
             </Link>
           </li>
           <li className="p-4 hover:bg-gray-700">
-            <Link to="#" className="flex items-center">
+            <Link to="/phieubangiao" className="flex items-center">
               <svg
                 className="w-6 h-6 mr-2"
                 fill="none"
