@@ -6,6 +6,9 @@ import AssetList from "./pages/AssetList";
 import SupplierList from "./pages/SupplierList";
 import InventoryReceipt from "./pages/InventoryReceipt"; // Thêm import
 import InventoryIssue from "./pages/InventoryIssue"; // Thêm import
+import ApprovalRequestList from "./pages/ApprovalRequestList";
+import InventoryStock from "./pages/InventoryStock";
+import InventoryHistory from "./pages/InventoryHistory";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -79,6 +82,30 @@ const App = () => {
             <ProtectedRoute>
               <InventoryIssue setIsAuthenticated={handleSetIsAuthenticated} />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/approval-request-list"
+          element={
+            <ProtectedRoute>
+            <ApprovalRequestList setIsAuthenticated={handleSetIsAuthenticated} />
+          </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/inventory-stock"
+          element={
+            <ProtectedRoute>
+            <InventoryStock setIsAuthenticated={handleSetIsAuthenticated} />
+          </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/inventory-history"
+          element={
+            <ProtectedRoute>
+            <InventoryHistory setIsAuthenticated={handleSetIsAuthenticated} />
+          </ProtectedRoute>
           }
         />
         <Route path="*" element={<Navigate to="/" />} />

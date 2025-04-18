@@ -191,10 +191,79 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth="2"
-                        d="M12 4v16m8-8H4"
+                        d="M15 17h5m-5-5h5m-5-5h5M5 7v10a2 2 0 002 2h10a2 2 0 002-2V7"
                       />
                     </svg>
                     <span>Phiếu xuất</span>
+                  </Link>
+                </li>
+                <li
+                  className={`p-2 hover:bg-gray-600 ${
+                    location.pathname === "/approval-request-list" ? "bg-gray-600" : ""
+                  }`}
+                >
+                  <Link to="/approval-request-list" className="flex items-center">
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>Yêu cầu duyệt</span>
+                  </Link>
+                </li>
+                <li
+                  className={`p-2 hover:bg-gray-600 ${
+                    location.pathname === "/inventory-stock" ? "bg-gray-600" : ""
+                  }`}
+                >
+                  <Link to="/inventory-stock" className="flex items-center">
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                      />
+                    </svg>
+                    <span>Tồn kho</span>
+                  </Link>
+                </li>
+                <li
+                  className={`p-2 hover:bg-gray-600 ${
+                    location.pathname === "/inventory-history" ? "bg-gray-600" : ""
+                  }`}
+                >
+                  <Link to="/inventory-history" className="flex items-center">
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>Lịch sử xuất nhập</span>
                   </Link>
                 </li>
               </ul>
