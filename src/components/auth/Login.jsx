@@ -54,6 +54,7 @@ const Login = ({ setIsAuthenticated }) => {
             <img src={logo} alt="Logo" className="w-16 mb-4" />
             <h2 className="text-xl font-bold text-center text-red-700 mb-4">
               PHẦN MỀM QUẢN LÝ TÀI SẢN HỖ TRỢ PHÒNG QUẢN TRỊ TRƯỜNG PTIT
+            
             </h2>
           </div>
 

@@ -163,7 +163,10 @@ const Home = ({ setIsAuthenticated }) => {
                   Xem và quản lý danh sách tài sản của trường.
                 </p>
               </div>
-              <div className="bg-gray-50 p-4 rounded-lg shadow hover:shadow-md transition">
+              <div 
+                className="bg-gray-50 p-4 rounded-lg shadow hover:shadow-md transition cursor-pointer"
+                onClick={() => navigate("/")}
+              >
                 <h3 className="text-lg font-medium text-blue-500">
                   Theo dõi Tình trạng
                 </h3>
@@ -171,7 +174,10 @@ const Home = ({ setIsAuthenticated }) => {
                   Kiểm tra trạng thái sử dụng, bảo trì của tài sản.
                 </p>
               </div>
-              <div className="bg-gray-50 p-4 rounded-lg shadow hover:shadow-md transition">
+              <div 
+                className="bg-gray-50 p-4 rounded-lg shadow hover:shadow-md transition cursor-pointer"
+                onClick={() => navigate("/statistics-report")}
+              >
                 <h3 className="text-lg font-medium text-blue-500">
                   Báo cáo Thống kê
                 </h3>

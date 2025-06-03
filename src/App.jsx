@@ -9,6 +9,12 @@ import InventoryIssue from "./pages/InventoryIssue"; // Thêm import
 import ApprovalRequestList from "./pages/ApprovalRequestList";
 import InventoryStock from "./pages/InventoryStock";
 import InventoryHistory from "./pages/InventoryHistory";
+import AssetManagement from "./pages/AssetManagement";
+import HandoverDocument from "./pages/HandoverDocument";
+import Maintenance from "./pages/Maintenance";
+import AddMaintenance from "./pages/AddMaintenance";
+import StatisticsReport from "./pages/StatisticsReport";
+
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -109,6 +115,43 @@ const App = () => {
           }
         />
         <Route path="*" element={<Navigate to="/" />} />
+        
+        <Route
+          path="/maintenance"
+          element={
+            <ProtectedRoute>
+              <Maintenance setIsAuthenticated={handleSetIsAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/handover-document"
+          element={
+            <ProtectedRoute>
+              <HandoverDocument setIsAuthenticated={handleSetIsAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/asset-management"
+          element={
+            <ProtectedRoute>
+              <AssetManagement setIsAuthenticated={handleSetIsAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/statistics-report"
+          element={
+            <ProtectedRoute>
+              <StatisticsReport setIsAuthenticated={handleSetIsAuthenticated} />
+            </ProtectedRoute>
+          }
+        />
+
       </Routes>
     </Router>
   );

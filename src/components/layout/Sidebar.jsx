@@ -80,7 +80,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
                   d="M9 17v-2c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2v2m-6 0h6m-9-5h12M5 7h14a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2z"
                 />
               </svg>
-              {isSidebarOpen && <span>Danh sách tài sản</span>}
+              {isSidebarOpen && <span>Danh sách nhóm tài sản</span>}
             </Link>
           </li>
           {/* Thay "Nhà cung cấp" thành "Quản lý kho" với dropdown */}
@@ -270,7 +270,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
             )}
           </li>
           <li className="p-4 hover:bg-gray-700">
-            <Link to="#" className="flex items-center">
+            <Link to="/maintenance" className="flex items-center">
               <svg
                 className="w-6 h-6 mr-2"
                 fill="none"
@@ -289,7 +289,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
             </Link>
           </li>
           <li className="p-4 hover:bg-gray-700">
-            <Link to="#" className="flex items-center">
+            <Link to="/handover-document" className="flex items-center">
               <svg
                 className="w-6 h-6 mr-2"
                 fill="none"
@@ -304,11 +304,11 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
                   d="M9 17v-2c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2v2m-6 0h6m-9-5h12M5 7h14a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2z"
                 />
               </svg>
-              {isSidebarOpen && <span>Phiếu bàn giao</span>}
+              {isSidebarOpen && <span>Biên bản bàn giao</span>}
             </Link>
           </li>
-          {/* <li className="p-4 hover:bg-gray-700">
-            <Link to="#" className="flex items-center">
+          <li className="p-4 hover:bg-gray-700">
+            <Link to="/asset-management" className="flex items-center">
               <svg
                 className="w-6 h-6 mr-2"
                 fill="none"
@@ -323,9 +323,28 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
                   d="M9 17v-2c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2v2m-6 0h6m-9-5h12M5 7h14a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2z"
                 />
               </svg>
-              {isSidebarOpen && <span>Đồng bộ</span>}
+              {isSidebarOpen && <span>Quản lý tài sản</span>}
             </Link>
-          </li> */}
+          </li>
+          <li className="p-4 hover:bg-gray-700">
+            <Link to="/statistics-report" className="flex items-center">
+              <svg
+                className="w-6 h-6 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 17v-2c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2v2m-6 0h6m-9-5h12M5 7h14a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2z"
+                />
+              </svg>
+              {isSidebarOpen && <span>Báo cáo thống kê</span>}
+            </Link>
+          </li>
           {/* <li className="p-4 hover:bg-gray-700">
             <Link to="#" className="flex items-center">
               <svg

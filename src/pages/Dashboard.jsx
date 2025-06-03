@@ -11,8 +11,8 @@ const Dashboard = () => {
 
   // Hàm đăng xuất
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Xóa token
-    navigate("/"); // Quay lại trang đăng nhập
+    localStorage.removeItem("token"); 
+    navigate("/");
   };
   return (
     <div className="p-6 bg-gray-100 min-h-screen">

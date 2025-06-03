@@ -11,9 +11,8 @@ const DataTable = ({
   onDelete,
   title,
   renderActions,
-  filterComponent, // Thêm prop filterComponent
+  filterComponent,
 }) => {
-  // Lọc dữ liệu dựa trên searchTerm
   const filteredData = Array.isArray(data)
     ? data.filter((item) => {
         if (!item) return false;
@@ -75,9 +74,13 @@ const DataTable = ({
                     {column.key === "status" ? (
                       <span
                         className={`${
-                          item[column.key] === "Chờ duyệt"
+                          item[column.key] === "Chờ xử lý"
                             ? "text-yellow-600"
-                            : item[column.key] === "Đã duyệt"
+                            : item[column.key] === "Đang xử lý"
+                            ? "text-blue-600"
+                            : item[column.key] === "Đã hoàn thành"
+                            ? "text-green-600"
+                            : item[column.key] === "Đã bàn giao"
                             ? "text-green-600"
                             : item[column.key] === "Từ chối"
                             ? "text-red-600"
@@ -85,6 +88,9 @@ const DataTable = ({
                         }`}
                       >
                         {item[column.key] || "N/A"}
+                        {item.reason && item.status === "Từ chối" && (
+                          <span className="block text-sm text-gray-500 ml-2">({item.reason})</span>
+                        )}
                       </span>
                     ) : column.key === "type" ? (
                       <span
@@ -98,6 +104,8 @@ const DataTable = ({
                       >
                         {item[column.key] || "N/A"}
                       </span>
+                    ) : column.render ? (
+                      column.render(item[column.key])
                     ) : (
                       item[column.key] || "N/A"
                     )}

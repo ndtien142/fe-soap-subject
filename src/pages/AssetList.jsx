@@ -3,31 +3,28 @@ import React, { useState, useCallback } from "react";
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 import DataTable from "../components/common/DataTable";
-import AddFormModal from "../components/common/AddFormModal";
-import DetailModal from "../components/common/DetailModal";
-import EditFormModal from "../components/common/EditFormModal";
 import Pagination from "../components/common/Pagination";
+import AddFormModal from "../components/common/AddFormModal";
+import FormInput from "../components/common/FormInput";
+import Html5QrcodePlugin from "../components/Html5QrcodePlugin";
 
-// Dữ liệu giả lập
 const initialAssetData = [
-  { id: "TS001", name: "Máy tính xách tay", type: "Điện tử", quantity: 10, status: "Tốt" },
-  { id: "TS002", name: "Bàn làm việc", type: "Nội thất", quantity: 20, status: "Tốt" },
+  { id: "TS001", name: "Máy chiếu", serialNumber: "SN001", purchaseDate: "2024-01-15", value: 10000000 },
+  { id: "TS002", name: "Máy tính", serialNumber: "SN002", purchaseDate: "2023-06-20", value: 500000000 },
+  { id: "TS003", name: "Bàn", serialNumber: "SN003", purchaseDate: "2025-05-15", value: 1500000 },
 ];
 
 const AssetList = ({ setIsAuthenticated }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [assetData, setAssetData] = useState(initialAssetData);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [showDetailModal, setShowDetailModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedAsset, setSelectedAsset] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [newAsset, setNewAsset] = useState({
     id: "",
     name: "",
-    type: "",
-    quantity: "",
-    status: "",
+    serialNumber: "",
+    purchaseDate: "",
+    value: "",
   });
 
   const toggleSidebar = useCallback(() => {
@@ -38,64 +35,131 @@ const AssetList = ({ setIsAuthenticated }) => {
     setSearchTerm(e.target.value);
   }, []);
 
-  const handleAddAsset = useCallback(
-    (e) => {
-      e.preventDefault();
-      setAssetData((prevData) => [...prevData, newAsset]);
-      setNewAsset({ id: "", name: "", type: "", quantity: "", status: "" });
-      setShowAddForm(false);
-    },
-    [newAsset]
-  );
+  const handleAddNew = () => {
+    setIsModalOpen(true);
+  };
 
-  const handleShowDetail = useCallback((asset) => {
-    setSelectedAsset(asset);
-    setShowDetailModal(true);
-  }, []);
-
-  const handleShowEdit = useCallback((asset) => {
-    setSelectedAsset({ ...asset });
-    setShowEditModal(true);
-  }, []);
-
-  const handleEditAsset = useCallback(
-    (e) => {
-      e.preventDefault();
-      setAssetData((prevData) =>
-        prevData.map((asset) => (asset.id === selectedAsset.id ? selectedAsset : asset))
-      );
-      setShowEditModal(false);
-      setSelectedAsset(null);
-    },
-    [selectedAsset]
-  );
-
-  const handleDeleteAsset = useCallback((id) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa tài sản này?")) {
-      setAssetData((prevData) => prevData.filter((asset) => asset.id !== id));
+  const handleModalSubmit = () => {
+    if (!newAsset.id || !newAsset.name || !newAsset.serialNumber || !newAsset.purchaseDate || !newAsset.value) {
+      alert("Vui lòng điền đầy đủ thông tin!");
+      return;
     }
-  }, []);
+    setAssetData((prevData) => [...prevData, newAsset]);
+    setIsModalOpen(false);
+    setNewAsset({ id: "", name: "", serialNumber: "", purchaseDate: "", value: "" });
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setNewAsset({ id: "", name: "", serialNumber: "", purchaseDate: "", value: "" });
+  };
+
+  const handleScan = (serialNumber) => {
+    setNewAsset((prev) => ({ ...prev, serialNumber }));
+  };
+
+  const handleShowDetail = (item) => {
+    alert(`Chi tiết nhóm tài sản: ${JSON.stringify(item)}`);
+  };
+
+  const handleShowEdit = (item) => {
+    setNewAsset(item);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = (id) => {
+    setAssetData((prevData) => prevData.filter((item) => item.id !== id));
+  };
 
   const columns = [
-    { key: "id", label: "Mã tài sản" },
-    { key: "name", label: "Tên tài sản" },
-    { key: "type", label: "Loại tài sản" },
-    { key: "quantity", label: "Số lượng" },
-    { key: "status", label: "Trạng thái" },
+    { key: "id", label: "Mã nhóm tài sản" },
+    { key: "name", label: "Tên nhóm tài sản" },
+    { key: "serialNumber", label: "Mã serial" },
+    { key: "purchaseDate", label: "Ngày mua" },
+    { key: "value", label: "Giá trị" },
   ];
+
+  const renderActions = (item) => (
+    <div className="flex space-x-2">
+      <button
+        onClick={() => handleShowDetail(item)}
+        className="text-blue-500 hover:text-blue-700"
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+          />
+        </svg>
+      </button>
+      <button
+        onClick={() => handleShowEdit(item)}
+        className="text-blue-500 hover:text-blue-700"
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+          />
+        </svg>
+      </button>
+      <button
+        onClick={() => handleDelete(item.id)}
+        className="text-red-500 hover:text-red-700"
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4M4 7h16"
+          />
+        </svg>
+      </button>
+    </div>
+  );
+
+  const filteredData = assetData.filter((item) =>
+    Object.values(item).some((value) =>
+      value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
 
   const fields = [
-    { name: "id", label: "Mã tài sản", type: "text", required: true },
-    { name: "name", label: "Tên tài sản", type: "text", required: true },
-    { name: "type", label: "Loại tài sản", type: "text", required: true },
-    { name: "quantity", label: "Số lượng", type: "number", required: true },
-    { name: "status", label: "Trạng thái", type: "text", required: true },
+    { name: "id", label: "Mã nhóm tài sản", type: "text", required: true },
+    { name: "name", label: "Tên nhóm tài sản", type: "text", required: true },
+    { name: "serialNumber", label: "Mã serial", type: "text", required: true },
+    { name: "purchaseDate", label: "Ngày mua", type: "date", required: true },
+    { name: "value", label: "Giá trị", type: "number", required: true },
   ];
-
-  const editFields = fields.map((field) => ({
-    ...field,
-    disabled: field.name === "id",
-  }));
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -103,49 +167,35 @@ const AssetList = ({ setIsAuthenticated }) => {
       <div className="flex-1 flex flex-col">
         <Header setIsAuthenticated={setIsAuthenticated} />
         <main className="p-6 flex-1">
-          <div className="mb-4">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold">Danh sách nhóm tài sản</h2>
             <button
-              onClick={() => setShowAddForm(true)}
-              className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+              onClick={handleAddNew}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
             >
-              Thêm mới
+              Thêm nhóm tài sản
             </button>
           </div>
+
           <DataTable
             columns={columns}
-            data={assetData}
+            data={filteredData}
             searchTerm={searchTerm}
             onSearch={handleSearch}
-            onShowDetail={handleShowDetail}
-            onShowEdit={handleShowEdit}
-            onDelete={handleDeleteAsset}
-            title="Danh sách tài sản"
+            title=""
+            renderActions={renderActions}
           />
-          <Pagination totalItems={assetData.length} />
+          <Pagination totalItems={filteredData.length} />
+
           <AddFormModal
-            isOpen={showAddForm}
-            onClose={() => setShowAddForm(false)}
-            onSubmit={handleAddAsset}
+            isOpen={isModalOpen}
+            onClose={handleModalClose}
+            onSubmit={handleModalSubmit}
             fields={fields}
-            title="Thêm tài sản mới"
+            title="Thêm nhóm tài sản mới"
             newItem={newAsset}
             setNewItem={setNewAsset}
-          />
-          <DetailModal
-            isOpen={showDetailModal}
-            onClose={() => setShowDetailModal(false)}
-            item={selectedAsset}
-            fields={fields}
-            title="Chi tiết tài sản"
-          />
-          <EditFormModal
-            isOpen={showEditModal}
-            onClose={() => setShowEditModal(false)}
-            onSubmit={handleEditAsset}
-            fields={editFields}
-            title="Chỉnh sửa tài sản"
-            selectedItem={selectedAsset}
-            setSelectedItem={setSelectedAsset}
+            extraContent={<Html5QrcodePlugin onScan={handleScan} />}
           />
         </main>
       </div>
