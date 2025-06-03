@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Login from "./components/auth/Login";
 import Home from "./pages/Home";
 import AssetList from "./pages/AssetList";
@@ -14,7 +19,9 @@ import HandoverDocument from "./pages/HandoverDocument";
 import Maintenance from "./pages/Maintenance";
 import AddMaintenance from "./pages/AddMaintenance";
 import StatisticsReport from "./pages/StatisticsReport";
-
+import BorrowReceiptList from "./pages/BorrowReceiptList";
+import BorrowReceiptDetail from "./pages/BorrowReceiptDetail";
+import CreateBorrowReceipt from "./pages/CreateBorrowReceipt";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -94,28 +101,30 @@ const App = () => {
           path="/approval-request-list"
           element={
             <ProtectedRoute>
-            <ApprovalRequestList setIsAuthenticated={handleSetIsAuthenticated} />
-          </ProtectedRoute>
+              <ApprovalRequestList
+                setIsAuthenticated={handleSetIsAuthenticated}
+              />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/inventory-stock"
           element={
             <ProtectedRoute>
-            <InventoryStock setIsAuthenticated={handleSetIsAuthenticated} />
-          </ProtectedRoute>
+              <InventoryStock setIsAuthenticated={handleSetIsAuthenticated} />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/inventory-history"
           element={
             <ProtectedRoute>
-            <InventoryHistory setIsAuthenticated={handleSetIsAuthenticated} />
-          </ProtectedRoute>
+              <InventoryHistory setIsAuthenticated={handleSetIsAuthenticated} />
+            </ProtectedRoute>
           }
         />
         <Route path="*" element={<Navigate to="/" />} />
-        
+
         <Route
           path="/maintenance"
           element={
@@ -152,6 +161,38 @@ const App = () => {
           }
         />
 
+        <Route
+          path="/borrow-receipt-list"
+          element={
+            <ProtectedRoute>
+              <BorrowReceiptList
+                setIsAuthenticated={handleSetIsAuthenticated}
+              />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/borrow-receipt-detail"
+          element={
+            <ProtectedRoute>
+              <BorrowReceiptDetail
+                setIsAuthenticated={handleSetIsAuthenticated}
+              />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/create-borrow-receipt"
+          element={
+            <ProtectedRoute>
+              <CreateBorrowReceipt
+                setIsAuthenticated={handleSetIsAuthenticated}
+              />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import logo from "../../assets/logo.jpg";
 import building from "../../assets/building.jpg";
 import backgroundImage from "../../assets/background.jpg";
+import axiosInstance from "../../common/util/axios";
+import { AUTH_LOGIN } from "../../common/constant/apiskey";
+import { ROUTER_HOME } from "../../common/constant/router.constant";
 
 const Login = ({ setIsAuthenticated }) => {
   const navigate = useNavigate();
@@ -16,7 +18,7 @@ const Login = ({ setIsAuthenticated }) => {
     setError("");
 
     try {
-      const response = await axios.post("http://localhost:3055/v1/api/login", {
+      const response = await axiosInstance.post(AUTH_LOGIN, {
         username,
         password,
       });
@@ -25,10 +27,9 @@ const Login = ({ setIsAuthenticated }) => {
 
       // Lưu token và role vào localStorage
       localStorage.setItem("token", token);
-      localStorage.setItem("role", role); // Lưu vai trò
 
       setIsAuthenticated(true);
-      navigate("/home");
+      navigate(ROUTER_HOME);
     } catch (err) {
       setError("Tên đăng nhập hoặc mật khẩu không đúng!");
       console.error("Login error:", err);
@@ -54,7 +55,6 @@ const Login = ({ setIsAuthenticated }) => {
             <img src={logo} alt="Logo" className="w-16 mb-4" />
             <h2 className="text-xl font-bold text-center text-red-700 mb-4">
               PHẦN MỀM QUẢN LÝ TÀI SẢN HỖ TRỢ PHÒNG QUẢN TRỊ TRƯỜNG PTIT
-            
             </h2>
           </div>
 
