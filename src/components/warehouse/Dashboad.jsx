@@ -3,6 +3,7 @@ import WarehouseTable from "./WarehouseTable";
 import Filter from "./Filter";
 import RequestManagement from "../requests/RequestManagement";
 import AlertsList from "../alerts/AlertList";
+import UserManagement from "../usermanagement/UserManagement";
 
 const Dashboard = () => {
   return (
@@ -22,7 +23,7 @@ const Dashboard = () => {
           <WarehouseOverview />
         </div>
 
-        {/* Bảng hàng hóa + Bộ lọc */}
+        {/* Danh sách vật tư + Bộ lọc */}
         <div className="md:col-span-2 bg-white p-4 shadow-lg rounded-lg">
           <h2 className="text-lg font-semibold text-gray-700 mb-3">
             Danh sách vật tư
@@ -31,7 +32,7 @@ const Dashboard = () => {
           <WarehouseTable />
         </div>
 
-        {/* Quản lý yêu cầu cấp phát (Chiếm 2 cột để cân đối) */}
+        {/* Yêu cầu cấp phát */}
         <div className="md:col-span-2 bg-white p-4 shadow-lg rounded-lg">
           <h2 className="text-lg font-semibold text-gray-700 mb-3">
             Quản lý yêu cầu cấp phát
@@ -39,17 +40,26 @@ const Dashboard = () => {
           <RequestManagement />
         </div>
 
-        {/* Danh sách cảnh báo */}
+        {/* Cảnh báo */}
         <div className="md:col-span-1 bg-white p-4 shadow-lg rounded-lg">
           <h2 className="text-lg font-semibold text-gray-700 mb-3">
             Cảnh báo
           </h2>
           <AlertsList />
         </div>
+
+        {/* Quản lý người dùng */}
+        <div className="md:col-span-3 bg-white p-4 shadow-lg rounded-lg overflow-y-auto">
+          <h2 className="text-lg font-semibold text-gray-700 mb-3">
+            Quản lý người dùng
+          </h2>
+          <UserManagement />
+        </div>
+
       </div>
     </div>
   );
 };
 
-
 export default Dashboard;
+
